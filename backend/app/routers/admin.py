@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from typing import List
 import json
@@ -43,6 +43,20 @@ def add_network(network: schemas.NetworkCreate, db: Session = Depends(get_db), a
     db.commit()
     db.refresh(db_net)
     return db_net
+
+@router.get("/networks")
+def get_networks(db: Session = Depends(get_db), admin: models.Student = Depends(dependencies.get_current_admin)):
+    return db.query(models.AllowedNetwork).all()
+
+@router.delete("/remove-network/{network_id}")
+def remove_network(network_id: int, db: Session = Depends(get_db), admin: models.Student = Depends(dependencies.get_current_admin)):
+    db.query(models.AllowedNetwork).filter(models.AllowedNetwork.id == network_id).delete()
+    db.commit()
+    return {"message": "Network deleted"}
+
+@router.get("/my-ip")
+def get_my_ip(request: Request):
+    return {"ip": request.client.host}
 
 @router.get("/attendance")
 def get_attendance(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), admin: models.Student = Depends(dependencies.get_current_admin)):

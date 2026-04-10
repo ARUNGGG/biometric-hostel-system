@@ -13,7 +13,30 @@ function AdminDashboard() {
   const [newStudentPass, setNewStudentPass] = useState('');
   const [createMsg, setCreateMsg] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [networks, setNetworks] = useState([]);
+  const [newNetworkSubnet, setNewNetworkSubnet] = useState('');
+  const [newNetworkDesc, setNewNetworkDesc] = useState('');
+  const [myIp, setMyIp] = useState('');
   const webcamRef = useRef(null);
+
+  const fetchNetworks = async () => {
+    try {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/admin/networks', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (res.ok) setNetworks(await res.json());
+    } catch (err) {}
+  };
+
+  const fetchMyIp = async () => {
+    try {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/admin/my-ip');
+      if (res.ok) {
+        const data = await res.json();
+        setMyIp(data.ip);
+      }
+    } catch (err) {}
+  };
 
   const fetchLogs = async () => {
     try {
@@ -41,7 +64,35 @@ function AdminDashboard() {
   useEffect(() => {
     fetchLogs();
     fetchStudents();
+    fetchNetworks();
+    fetchMyIp();
   }, []);
+
+  const handleAddNetwork = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/admin/add-network', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ subnet: newNetworkSubnet, description: newNetworkDesc })
+      });
+      if (res.ok) {
+        setNewNetworkSubnet(''); setNewNetworkDesc('');
+        fetchNetworks();
+      }
+    } catch (err) {}
+  };
+
+  const handleRemoveNetwork = async (id) => {
+    if (!window.confirm('Are you sure you want to remove this network security layer completely?')) return;
+    try {
+      await fetch(`https://biometric-hostel-system.onrender.com/api/admin/remove-network/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchNetworks();
+    } catch (err) {}
+  };
 
   const handleCreateStudent = async (e) => {
     e.preventDefault();
@@ -183,6 +234,27 @@ function AdminDashboard() {
           <button onClick={handleRegisterFace} style={{ padding: '10px', marginTop: '10px' }}>
             Capture & Registry Face
           </button>
+        </div>
+
+        {/* Network Security Manager */}
+        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '15px', borderRadius: '8px', marginTop: '20px' }}>
+          <h3>Network Security Layers</h3>
+          <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Your Global Host IP: <strong>{myIp || 'Detecting...'}</strong></p>
+          
+          <form onSubmit={handleAddNetwork}>
+            <input type="text" placeholder="CIDR (e.g. 192.168.1.0/24 or 0.0.0.0/0)" value={newNetworkSubnet} onChange={e => setNewNetworkSubnet(e.target.value)} required style={{ padding: '8px', marginBottom: '10px' }} />
+            <input type="text" placeholder="Description (e.g. Hostel Primary Wi-Fi)" value={newNetworkDesc} onChange={e => setNewNetworkDesc(e.target.value)} required style={{ padding: '8px', marginBottom: '10px' }} />
+            <button type="submit" style={{ padding: '8px', background: 'var(--success)' }}>Add Allowed Subnet</button>
+          </form>
+
+          <div style={{ marginTop: '15px' }}>
+            {networks.map(net => (
+              <div key={net.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: 'rgba(0,0,0,0.3)', marginBottom: '5px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '14px', textAlign: 'left' }}><strong>{net.subnet}</strong> <br/> <small style={{color:'var(--text-muted)'}}>{net.description}</small></span>
+                <button onClick={() => handleRemoveNetwork(net.id)} style={{ width: 'auto', padding: '5px 10px', background: 'var(--error)', fontSize: '12px' }}>Revoke</button>
+              </div>
+            ))}
+          </div>
         </div>
         
         <button onClick={() => {
