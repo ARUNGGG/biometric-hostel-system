@@ -1,0 +1,17 @@
+# Environments and Caches
+venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+.coverage
+
+# Databases and Secrets
+*.db
+*.sqlite
+.env
+.env.local
+
+# Builds and OS artifacts
+dist/
+dist-ssr/
+.DS_Store
