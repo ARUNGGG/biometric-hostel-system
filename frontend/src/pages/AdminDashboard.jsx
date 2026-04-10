@@ -17,7 +17,7 @@ function AdminDashboard() {
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/attendance', {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/admin/attendance', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) setLogs(await res.json());
@@ -29,7 +29,7 @@ function AdminDashboard() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/students', {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/admin/students', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (res.ok) setStudents(await res.json());
@@ -47,7 +47,7 @@ function AdminDashboard() {
     e.preventDefault();
     setCreateMsg('');
     try {
-      const res = await fetch('http://localhost:8000/api/auth/register', {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -81,7 +81,7 @@ function AdminDashboard() {
     const imageSrc = webcamRef.current.getScreenshot();
     
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/add-embedding/${selectedStudentId}`, {
+      const res = await fetch(`https://biometric-hostel-system.onrender.com/api/admin/add-embedding/${selectedStudentId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ function AdminDashboard() {
     setError('');
     setSuccessMsg('');
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/remove-student/${selectedStudentId}`, {
+      const res = await fetch(`https://biometric-hostel-system.onrender.com/api/admin/remove-student/${selectedStudentId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

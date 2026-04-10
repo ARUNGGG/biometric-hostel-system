@@ -14,7 +14,7 @@ function Login({ setToken }) {
       formData.append('username', username);
       formData.append('password', password);
 
-      const res = await fetch('http://localhost:8000/api/auth/login', {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

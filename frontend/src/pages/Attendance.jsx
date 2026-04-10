@@ -14,7 +14,7 @@ function Attendance() {
     const imageSrc = webcamRef.current.getScreenshot();
 
     try {
-      const res = await fetch('http://localhost:8000/api/attendance/mark', {
+      const res = await fetch('https://biometric-hostel-system.onrender.com/api/attendance/mark', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
