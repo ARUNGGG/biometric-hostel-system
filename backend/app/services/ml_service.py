@@ -13,7 +13,7 @@ def get_embedding(image_base64: str) -> List[float]:
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     # Natively enforces actual face bounds
-    embedding_obj = DeepFace.represent(img_path=img, model_name="Facenet512", enforce_detection=True, detector_backend="ssd")
+    embedding_obj = DeepFace.represent(img_path=img, model_name="Facenet", enforce_detection=True, detector_backend="ssd")
     return embedding_obj[0]["embedding"]
 
 def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
